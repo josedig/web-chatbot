@@ -1,0 +1,329 @@
+/* --- EFECTO SOMBRÍO PARA ICONOS (TEXTO) Y LOGO (IMAGEN PNG) --- */
+
+/* 1. Estado inicial con transiciones suaves para los iconos de texto y la imagen del logo */
+.nav-icons i, 
+.social-icons i, 
+.logo img {
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+/* 2. Efecto al pasar el cursor (Hover) */
+.nav-icons i:hover, 
+.social-icons i:hover, 
+.logo img:hover {
+    cursor: pointer;
+    
+    /* El truco maestro: drop-shadow funciona perfecto con la transparencia de un PNG */
+    filter: drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.5));
+    
+    /* Pequeña elevación física integrada */
+    transform: translateY(-2px);
+}
+
+:root {
+    --navy-blue: #0a1f44;
+    --white: #ffffff;
+    --light-gray: #f4f4f4;
+    --text-color: #333;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--white);
+    color: var(--text-color);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Notificación flotante */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: -300px;
+    background:#0a1f44;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 5px;
+    transition: 0.5s;
+    z-index: 2000;
+}
+.notification.show { right: 20px; }
+
+/* Selector de cantidad */
+.qty-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.qty-selector input {
+    width: 40px;
+    text-align: center;
+    border: 1px solid #ddd;
+    margin: 0 5px;
+}
+.qty-selector button {
+    background: #eee;
+    border: none;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+}
+
+/* Header */
+header {
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--navy-blue);
+}
+.logo i { margin-right: 10px; }
+
+nav ul { display: flex; list-style: none; }
+nav ul li { margin: 0 15px; }
+nav ul li a { text-decoration: none; color: var(--navy-blue); font-weight: 500; }
+
+.nav-icons i { margin-left: 20px; cursor: pointer; color: var(--navy-blue); }
+
+/* Hero Section */
+.hero {
+    height: 700px;
+    background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(/img/backgraund.jpg); /* Corregido opcionalmente 'backgraund' */
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+}
+.hero h1 { font-size: 60px; margin-bottom: 10px; }
+.hero p { font-size: 20px; margin-bottom: 20px; }
+
+.btn-primary {
+    background-color: var(--navy-blue);
+    color: white;
+    padding: 12px 30px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+/* Product Sections */
+.product-section { padding: 50px 0; }
+.product-section h2 { margin-bottom: 30px; color: var(--navy-blue); }
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.product-card {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    overflow: hidden;
+    text-align: center;
+    padding-bottom: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+.product-card img { width: 100%; height: 200px; object-fit: cover; }
+.product-card h3 { margin: 15px 0 5px; font-size: 18px; }
+.product-card .price { color: var(--navy-blue); font-weight: bold; }
+
+/* --- ESTILOS BASE DEL CARRITO (Añadidos para que funcione en PC y Móvil) --- */
+.cart-sidebar {
+    position: fixed;
+    top: 0;
+    right: -400px; /* Oculto por defecto a la derecha */
+    width: 350px;
+    height: 100%;
+    background-color: var(--navy-blue); /* Se aplica el color #0a1f44 */
+    color: var(--white); /* Texto en blanco para que resalte y se pueda leer */
+    box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+    transition: 0.3s ease;
+    z-index: 1500;
+    padding: 20px;
+}
+.cart-sidebar.open {
+    right: 0; /* Se muestra al añadir esta clase con JS */
+}
+.cart-icon-container {
+    position: relative;
+    display: inline-block;
+}
+#cart-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+}
+
+/* Botón para restar unidades desde el carrito lateral */
+.btn-cart-minus {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: var(--white);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 11px;
+    transition: all 0.2s ease;
+}
+
+.btn-cart-minus:hover {
+    background-color: #e74c3c; /* Se vuelve rojo al pasar el cursor (efecto eliminar) */
+    border-color: #e74c3c;
+    transform: scale(1.1);
+}
+
+/* Order Form Section */
+.order-section {
+    background-color: var(--navy-blue);
+    padding: 50px;
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+    margin: 40px 0;
+}
+.order-section h2 { margin-bottom: 30px; }
+
+#whatsappForm {
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+#whatsappForm input {
+    padding: 12px;
+    border-radius: 5px;
+    border: none;
+}
+
+.btn-whatsapp {
+    background-color: var(--white);
+    color: var(--navy-blue);
+    border: none;
+    padding: 15px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.2s;
+}
+.btn-whatsapp:hover { transform: scale(1.02); }
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/* Centra únicamente los textos informativos (Nombre, Teléfono, etc.) */
+.form-group label {
+    text-align: center;
+    width: 100%;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Los inputs se mantienen expandidos elegantemente ocupando el ancho del formulario */
+.form-group input,
+.form-group select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Footer */
+footer {
+    background-color: #f8f9fa;
+    padding: 40px 0;
+    text-align: center;
+    margin-top: 50px;
+}
+.footer-links a { margin: 0 15px; color: var(--navy-blue); text-decoration: none; }
+.social-icons { margin: 20px 0; font-size: 24px; }
+.social-icons i { margin: 0 10px; color: var(--navy-blue); cursor: pointer; }
+footer p { font-size: 12px; color: #777; }
+
+
+/* --- AJUSTES PARA MÓVIL (Arreglado Sintaxis) --- */ 
+@media (max-width: 768px) { 
+    /* Ajuste del Header */
+    .nav-container { flex-direction: column; gap: 15px; } 
+    nav ul { gap: 10px; font-size: 14px; } 
+    .hero h1 { font-size: 36px; } /* Letra más pequeña en móviles */
+
+    /* Ajuste de Productos: 2 columnas en pantallas pequeñas */ 
+    .product-grid { 
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 0 10px; 
+    } 
+    .product-card img { height: 150px; } /* Imágenes más pequeñas */ 
+    .product-card h3 { font-size: 15px; height: 40px; } /* Evita que nombres largos rompan diseño */
+        
+    /* Carrito lateral en móvil: ocupa casi toda la pantalla */ 
+    .cart-sidebar { width: 85%; right: -90%; } 
+    .cart-sidebar.open { right: 0; }
+
+    /* Formulario de Pedido */ 
+    .order-section { padding: 30px 15px; margin: 20px 10px; } 
+    #whatsappForm { width: 100%; } 
+
+    /* Botón flotante para el Carrito en móvil */ 
+    .cart-icon-container { 
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--navy-blue);
+        color: white;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        z-index: 999; 
+    } 
+    #cart-count { top: 5px; right: 5px; } 
+} 
+
+/* Ajuste para teléfonos muy pequeños */
+@media (max-width: 480px) { 
+    .product-grid { grid-template-columns: 1fr; } /* 1 sola columna */ 
+    .hero h1 { font-size: 28px; } 
+}
