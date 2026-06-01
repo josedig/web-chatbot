@@ -291,7 +291,7 @@ footer p { font-size: 12px; color: #777; }
 
     .hero {
         /* Solo modificamos la altura. La imagen NO se toca, por lo tanto NO desaparecerá */
-        height: 250px; 
+        height: 225px; 
         
         /* Aseguramos que se acomode al centro si cambia la proporción */
         background-position: center center; 
