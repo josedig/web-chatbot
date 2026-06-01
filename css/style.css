@@ -108,17 +108,20 @@ nav ul li a { text-decoration: none; color: var(--navy-blue); font-weight: 500; 
 .nav-icons i { margin-left: 20px; cursor: pointer; color: var(--navy-blue); }
 
 /* Hero Section */
+/* --- CÓDIGO ACTUAL (Para Computadoras) --- */
 .hero {
-    height: 700px;
-    background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(/img/backgraund.jpg); /* Corregido opcionalmente 'backgraund' */
+    height: 700px; /* Altura grande para pantallas de PC */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('/img/backgraund.jpg'); 
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     color: white;
 }
+
 .hero h1 { font-size: 60px; margin-bottom: 10px; }
 .hero p { font-size: 20px; margin-bottom: 20px; }
 
@@ -286,12 +289,22 @@ footer p { font-size: 12px; color: #777; }
     nav ul { gap: 10px; font-size: 14px; } 
     .hero h1 { font-size: 36px; } /* Letra más pequeña en móviles */
 
+    .hero {
+        /* Solo modificamos la altura. La imagen NO se toca, por lo tanto NO desaparecerá */
+        height: 300px; 
+        
+        /* Aseguramos que se acomode al centro si cambia la proporción */
+        background-position: center center; 
+    }
+
     /* Ajuste de Productos: 2 columnas en pantallas pequeñas */ 
     .product-grid { 
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
         padding: 0 10px; 
-    } 
+    }
+    
+
     .product-card img { height: 150px; } /* Imágenes más pequeñas */ 
     .product-card h3 { font-size: 15px; height: 40px; } /* Evita que nombres largos rompan diseño */
         
