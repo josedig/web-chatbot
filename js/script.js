@@ -1,11 +1,15 @@
 // 1. Inicialización global del carrito de compras
 let cart = [];
 
-// FUNCIÓN MODIFICADA: Ahora permite bajar hasta 0 en la tarjeta del producto
+// Configuración de tu Bot de Telegram (Credenciales reales añadidas)
+const TELEGRAM_BOT_TOKEN = '8649390276:AAHeKVIXjUmit3vVIf7oRk1KRwSLsMxuDzE'; 
+const TELEGRAM_CHAT_ID = '577311562'; 
+
+// Función para bajar o subir cantidades en la tarjeta del producto
 function changeQty(id, delta) {
     const input = document.getElementById(id);
     let val = parseInt(input.value) + delta;
-    if (val < 0) val = 0; // Cambiado de 1 a 0 para permitir vaciar el selector
+    if (val < 0) val = 0; // Permite vaciar el selector a 0
     input.value = val;
 }
 
@@ -18,7 +22,7 @@ function showNotification() {
     }
 }
 
-// FUNCIÓN MODIFICADA: Valida que no se añadan productos con cantidad 0
+// Valida que no se añadan productos con cantidad 0
 function addToCart(name, price, qtyId) {
     const qtyInput = document.getElementById(qtyId);
     if (!qtyInput) return;
@@ -46,17 +50,17 @@ function addToCart(name, price, qtyId) {
     qtyInput.value = 0;
 }
 
-// NUEVA FUNCIÓN: Permite restar cantidad o eliminar directamente desde el carrito lateral
+// Permite restar cantidad o eliminar directamente desde el carrito lateral
 function removeFromCart(index) {
     if (cart[index].qty > 1) {
         cart[index].qty -= 1; // Resta uno si tiene más de uno
     } else {
-        cart.splice(index, 1); // Lo elimina por completo del arreglo si llega a 0
+        cart.splice(index, 1); // Lo elimina por completo si llega a 0
     }
     updateCartUI(); // Actualiza la interfaz del carrito
 }
 
-// FUNCIÓN MODIFICADA: Añade botones estilizados para restar del carrito lateral
+// Actualiza visualmente el carrito lateral
 function updateCartUI() {
     const container = document.getElementById('cart-items');
     const totalEl = document.getElementById('cart-total');
@@ -73,7 +77,6 @@ function updateCartUI() {
         total += subtotal;
         count += item.qty;
         
-        // Renderizamos cada producto agregando un botón para restar/eliminar usando su índice
         container.innerHTML += `
             <div class="cart-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 8px;">
                 <div style="flex: 1; padding-right: 10px;">
@@ -102,7 +105,7 @@ function toggleCart() {
     }
 }
 
-// Escuchador del formulario para procesar el envío final a WhatsApp (Actualizado con Cédula y Pago)
+// 2. Procesar el envío final a Telegram mediante el evento "submit" del formulario
 document.getElementById('whatsappForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -112,15 +115,12 @@ document.getElementById('whatsappForm').addEventListener('submit', function(e) {
         return;
     }
 
-    // Configuración del administrador (Número telefónico de destino)
-    const adminPhoneNumber = "584127759254"; 
-
-    // Captura de todos los datos del formulario (Incluyendo los nuevos campos)
+    // Captura de todos los datos del formulario
     const name = document.getElementById('name').value;
     const phone = document.getElementById('phone').value;
     const address = document.getElementById('address').value;
-    const cedula = document.getElementById('cedula').value; // Captura Cédula/RIF
-    const payment = document.getElementById('payment').value; // Captura Método de Pago
+    const cedula = document.getElementById('cedula').value; 
+    const payment = document.getElementById('payment').value; 
 
     // Construcción dinámica de la lista de productos acumulados
     let productListText = "";
@@ -132,19 +132,50 @@ document.getElementById('whatsappForm').addEventListener('submit', function(e) {
         productListText += `• ${item.name} (x${item.qty}) - $${subtotal.toFixed(2)}\n`;
     });
 
-    // Construcción final y formateada del mensaje incluyendo los nuevos campos para el comercio
-    const message = `🍦 *¡Hola Papa Helados! Me gustaría realizar un pedido:* \n\n` +
-                    `👤 *Nombre:* ${name}\n` +
-                    `🪪 *Cédula/RIF:* ${cedula}\n` +
-                    `📞 *Teléfono:* ${phone}\n` +
-                    `📍 *Dirección:* ${address}\n` +
-                    `💳 *Método de Pago:* ${payment}\n\n` +
-                    `🛒 *Detalle del Pedido:*\n${productListText}\n` +
-                    `💰 *Total General:* $${grandTotal.toFixed(2)}`;
+    // Construcción del mensaje para Telegram usando formato Markdown
+    let mensaje = `🔔 *NUEVA ORDEN - PAPA HELADOS* 🍦\n\n`;
+    mensaje += `👤 *Cliente:* ${name}\n`;
+    mensaje += `🪪 *Cédula/RIF:* ${cedula}\n`;
+    mensaje += `📞 *Teléfono:* ${phone}\n`;
+    mensaje += `📍 *Dirección:* ${address}\n`;
+    mensaje += `💳 *Método de Pago:* ${payment}\n\n`;
+    mensaje += `🛒 *DETALLE DEL PEDIDO:*\n`;
+    mensaje += productListText;
+    mensaje += `\n💰 *TOTAL A PAGAR:* $${grandTotal.toFixed(2)}`;
+    mensaje += `\n\n*¡Verifica tu pedido!*`;
+    mensaje += `\n*¡Gracias por preferirnos 🍦💙!*`;
 
-    // Codificar mensaje para compatibilidad estricta con URL de WhatsApp
-    const whatsappUrl = `https://wa.me/${adminPhoneNumber}?text=${encodeURIComponent(message)}`;
+    // 3. Enviar los datos a la API de Telegram mediante fetch (AJAX)
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 
-    // Abrir la ventana de WhatsApp en una pestaña externa
-    window.open(whatsappUrl, '_blank');
-});
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: mensaje,
+            parse_mode: 'Markdown'
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            alert('¡Pedido procesado con éxito! Ahora te redirigiremos a Telegram.');
+            
+            // CORREGIDO: Se removió el símbolo '@' para que el enlace sea válido
+            window.location.href = "https://t.me/papa_hel_bot"; 
+            
+            // Limpiar el carrito después del pedido
+            cart = [];
+            localStorage.removeItem('cart');
+            updateCartUI();
+        } else {
+            alert('Hubo un problema al enviar el pedido por Telegram.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error de conexión al enviar el pedido.');
+    });
+}); // CORREGIDO: Se añadió el cierre del addEventListener que faltaba
